@@ -9,17 +9,15 @@ from .models import Opinion
 
 @app.route("/")
 def index_view():
-    # Определяется количество мнений в базе данных
+    """Случайный вывод мнения о фильме"""
     quantity = Opinion.query.count()
 
-    # Если мнений нет,
     if not quantity:
-        # то возвращается сообщение
         return "В базе данных мнений о фильмах нет!"
-    # Иначе выбирается случайное число в диапазоне от 0 и до quantity
+    # Случайное число в диапазоне от 0 и до quantity
     offset_value = randrange(quantity)
 
-    # И определяется случайный объект
+    # Случайный объект
     opinion: Opinion = Opinion.query.offset(offset_value).first()
 
     return render_template("opinion.html", opinion=opinion)
@@ -27,6 +25,7 @@ def index_view():
 
 @app.route("/add", methods=["GET", "POST"])
 def add_opinion_view():
+    """Добавление отзыва о фильме"""
     form = OpinionForm()
     # Если ошибок не возникло, то
     if form.validate_on_submit():
@@ -40,11 +39,11 @@ def add_opinion_view():
 
         # нужно создать новый экземпляр класса Opinion
         opinion = Opinion(
-            title=form.title.data, text=form.text.data, source=form.source.data
+            title=form.title.data,
+            text=form.text.data,
+            source=form.source.data,
         )
-        # Затем добавить его в сессию работы с базой данных
         db.session.add(opinion)
-        # И зафиксировать изменения
         db.session.commit()
         # Затем перейти на страницу добавленного мнения
         return redirect(url_for("opinion_view", id=opinion.id))
@@ -52,11 +51,9 @@ def add_opinion_view():
     return render_template("add_opinion.html", form=form)
 
 
-# Тут указывается конвертер пути для id
 @app.route("/opinions/<int:id>")
-# Параметром указывается имя переменной
 def opinion_view(id):
-    # Теперь можно запрашивать мнение по id
+    """Отображение отзыва по его ID"""
     opinion = db.get_or_404(
         Opinion,
         id,
