@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from sqlalchemy import String, Text
@@ -10,6 +11,7 @@ def now_utc() -> datetime:
     return datetime.now(timezone.utc)
 
 
+@dataclass
 class Opinion(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(128))
