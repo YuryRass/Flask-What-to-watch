@@ -1,26 +1,27 @@
 from random import randrange
 
-from flask import flash, redirect, render_template, url_for
+from flask import abort, flash, redirect, render_template, url_for
 
 from . import app, db
 from .forms import OpinionForm
 from .models import Opinion
 
 
+def random_opinion():
+    quantity = Opinion.query.count()
+    if quantity:
+        offset_value = randrange(quantity)
+        opinion: Opinion = Opinion.query.offset(offset_value).first()
+        return opinion
+
+
 @app.route("/")
 def index_view():
     """Случайный вывод мнения о фильме"""
-    quantity = Opinion.query.count()
-
-    if not quantity:
-        return "В базе данных мнений о фильмах нет!"
-    # Случайное число в диапазоне от 0 и до quantity
-    offset_value = randrange(quantity)
-
-    # Случайный объект
-    opinion: Opinion = Opinion.query.offset(offset_value).first()
-
-    return render_template("opinion.html", opinion=opinion)
+    opinion: Opinion | None = random_opinion()
+    if opinion:
+        return render_template("opinion.html", opinion=opinion)
+    abort(404)
 
 
 @app.route("/add", methods=["GET", "POST"])
