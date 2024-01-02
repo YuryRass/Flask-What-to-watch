@@ -121,7 +121,7 @@ def delete_opinion(id):
     """Удаление отзыва"""
     opinion: Opinion | None = Opinion.query.get(id)
     if not opinion:
-        raise InvalidAPIUsage('Мнение с указанным id не найдено', 404)
+        raise InvalidAPIUsage("Мнение с указанным id не найдено", 404)
     db.session.delete(opinion)
     db.session.commit()
 

@@ -20,10 +20,10 @@ class InvalidAPIUsage(Exception):
 @app.errorhandler(InvalidAPIUsage)
 def invalid_api_usage(error: InvalidAPIUsage):
     return Response(
-            str(error),
-            status=error.status_code,
-            content_type="application/json; charset=utf-8",
-        )
+        str(error),
+        status=error.status_code,
+        content_type="application/json; charset=utf-8",
+    )
 
 
 # Тут декорируется обработчик и указывается код нужной ошибки

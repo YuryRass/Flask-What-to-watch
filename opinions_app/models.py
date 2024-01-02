@@ -14,6 +14,7 @@ def now_utc() -> datetime:
 @dataclass
 class Opinion(db.Model):
     """Отзыв на фильм"""
+
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(128))
     text: Mapped[str] = mapped_column(Text, unique=True)
