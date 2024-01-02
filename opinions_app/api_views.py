@@ -2,6 +2,22 @@ from flask import Response, json, request
 
 from . import app, db
 from .models import Opinion
+from .views import random_opinion
+
+
+@app.route("/api/get-random-opinion/", methods=["GET"])
+def get_random_opinion():
+    """Выводит случаный отзыв о фильме"""
+    opinion = random_opinion()
+
+    json_string = json.dumps({"opinion": opinion}, ensure_ascii=False)
+
+    response = Response(
+        json_string,
+        status=201,
+        content_type="application/json; charset=utf-8",
+    )
+    return response
 
 
 @app.route("/api/opinions/", methods=["GET"])
@@ -16,6 +32,28 @@ def get_opinions():
     response = Response(
         opinions_list,
         status=200,
+        content_type="application/json; charset=utf-8",
+    )
+    return response
+
+
+@app.route("/api/opinions/", methods=["POST"])
+def add_opinion():
+    """Добавление отзыва на фильм"""
+    data = request.get_json()
+    # Создание нового пустого отзыва
+    opinion = Opinion()
+    # Наполнение его данными из запроса
+    opinion.filling(data)
+    # Сохрание в БД
+    db.session.add(opinion)
+    db.session.commit()
+    # JSON вывод
+    json_string = json.dumps({"opinion": opinion}, ensure_ascii=False)
+
+    response = Response(
+        json_string,
+        status=201,
         content_type="application/json; charset=utf-8",
     )
     return response
@@ -43,12 +81,11 @@ def update_opinion(id):
     opinion: Opinion | None = Opinion.query.get_or_404(id)
 
     # изменяем атрибуты отзыва
-    opinion_attrs = [clmn.key for clmn in opinion.__table__.columns]
-    for attr in opinion_attrs:
-        setattr(opinion, attr, data.get(attr, getattr(opinion, attr)))
-
+    opinion.update(data)
     db.session.commit()
-    json_string = json.dumps(opinion, ensure_ascii=False)
+
+    # JSON вывод
+    json_string = json.dumps({"opinion": opinion}, ensure_ascii=False)
 
     response = Response(
         json_string,
