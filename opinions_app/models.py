@@ -19,7 +19,7 @@ class Opinion(db.Model):
     text: Mapped[str] = mapped_column(Text, unique=True)
     source: Mapped[str | None] = mapped_column(String(256))
     timestamp: Mapped[datetime] = mapped_column(index=True, default=now_utc)
-    added_by: Mapped[str] = mapped_column(String(64))
+    added_by: Mapped[str | None] = mapped_column(String(64))
 
     def update(self, data: dict) -> None:
         """Изменение атрибутов модели"""
